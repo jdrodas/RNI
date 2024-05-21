@@ -226,3 +226,95 @@ create or replace view core.v_info_reactores as
 
 select *
 from core.v_info_reactores;
+
+
+-- ----------------------------
+-- Creación de Procedimientos
+-- ----------------------------
+-- p_inserta_reactor
+create or replace procedure core.p_inserta_reactor(
+                            in p_nombre                 text,
+                            in p_ubicacion_id           integer,
+                            in p_estado_id              integer,
+                            in p_tipo_id                integer,
+                            in p_potencia_termica       float,
+                            in p_fecha_primera_reaccion date)
+    language plpgsql as
+$$
+    begin 
+        insert into core.reactores(nombre, ubicacion_id, estado_id, tipo_id, potencia_termica, fecha_primera_reaccion)
+        values (p_nombre, p_ubicacion_id, p_estado_id, p_tipo_id, p_potencia_termica, p_fecha_primera_reaccion);
+    end;
+$$;
+
+-- p_actualiza_reactor
+create or replace procedure core.p_actualiza_reactor(
+                            in p_id                     integer,
+                            in p_nombre                 text,
+                            in p_ubicacion_id           integer,
+                            in p_estado_id              integer,
+                            in p_tipo_id                integer,
+                            in p_potencia_termica       float,
+                            in p_fecha_primera_reaccion date)
+    language plpgsql as
+$$
+    begin
+        update core.reactores
+        set 
+            nombre = p_nombre,
+            ubicacion_id = p_ubicacion_id,
+            estado_id = p_estado_id,
+            tipo_id = p_tipo_id,
+            potencia_termica = p_potencia_termica,
+            fecha_primera_reaccion = p_fecha_primera_reaccion
+        where id = p_id;
+    end;
+$$;
+
+-- p_elimina_reactor
+create or replace procedure core.p_elimina_reactor(
+                            in p_id integer)
+    language plpgsql as
+$$
+    begin
+        delete from core.reactores
+        where id = p_id;
+    end;
+$$;
+
+-- Invocaciones de Prueba
+do
+$$
+    begin
+        call core.p_inserta_reactor(
+                p_nombre := 'Prometeo Andino',
+                p_ubicacion_id := 3,
+                p_estado_id := 8,
+                p_tipo_id := 41,
+                p_potencia_termica := 5000,
+                p_fecha_primera_reaccion := null
+             );
+    end
+$$;
+
+do
+$$
+    begin
+        call core.p_actualizar_reactor(
+                p_id := 26,
+                p_nombre := 'Prometeo Andino',
+                p_ubicacion_id := 3,
+                p_estado_id := 8,
+                p_tipo_id := 41,
+                p_potencia_termica := 3500,
+                p_fecha_primera_reaccion := null
+             );
+    end
+$$;
+
+do
+$$
+    begin
+        call core.p_elimina_reactor(p_id := 26);
+    end
+$$;
