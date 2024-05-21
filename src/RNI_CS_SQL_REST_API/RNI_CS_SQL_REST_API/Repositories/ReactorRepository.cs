@@ -2,6 +2,7 @@
 using RNI_CS_SQL_REST_API.DBContexts;
 using RNI_CS_SQL_REST_API.Interfaces;
 using RNI_CS_SQL_REST_API.Models;
+using System.Data;
 
 namespace RNI_CS_SQL_REST_API.Repositories
 {
@@ -20,6 +21,26 @@ namespace RNI_CS_SQL_REST_API.Repositories
 
             var resultadoReactores = await conexion
                 .QueryAsync<Reactor>(sentenciaSQL, new DynamicParameters());
+
+            return resultadoReactores.ToList();
+        }
+
+        public async Task<List<Reactor>> GetByReactorTypeIdAsync(int tipo_reactor_id)
+        {
+            var conexion = contextoDB.CreateConnection();
+
+            DynamicParameters parametrosSentencia = new();
+            parametrosSentencia.Add("@tipo_reactor_id", tipo_reactor_id,
+                                    DbType.Int32, ParameterDirection.Input);
+
+            string sentenciaSQL = "SELECT v.reactor_id id, v.reactor_nombre nombre, v.ubicacion_pais ubicacionPais, " +
+                "v.ubicacion_ciudad ubicacionCiudad, v.reactor_tipo tipoReactor, v.reactor_estado estadoReactor, " +
+                "v.potencia_termica potenciaTermica, v.fecha_primera_reaccion fechaPrimeraReaccion " +
+                "FROM v_info_reactores v " +
+                "WHERE v.tipo_id = @tipo_reactor_id";
+
+            var resultadoReactores = await conexion
+                .QueryAsync<Reactor>(sentenciaSQL, parametrosSentencia);
 
             return resultadoReactores.ToList();
         }
