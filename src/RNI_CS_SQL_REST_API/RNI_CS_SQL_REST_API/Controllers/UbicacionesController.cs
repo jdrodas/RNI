@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using RNI_CS_SQL_REST_API.Exceptions;
 using RNI_CS_SQL_REST_API.Services;
 
 namespace RNI_CS_SQL_REST_API.Controllers
@@ -16,6 +17,22 @@ namespace RNI_CS_SQL_REST_API.Controllers
                 .GetAllAsync();
 
             return Ok(lasUbicaciones);
+        }
+
+        [HttpGet("{ubicacion_id:int}")]
+        public async Task<IActionResult> GetByIdAsync(int ubicacion_id)
+        {
+            try
+            {
+                var unaUbicacion = await _ubicacionService
+                    .GetByIdAsync(ubicacion_id);
+
+                return Ok(unaUbicacion);
+            }
+            catch (AppValidationException error)
+            {
+                return NotFound(error.Message);
+            }
         }
     }
 }
