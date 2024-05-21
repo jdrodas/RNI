@@ -17,10 +17,10 @@ namespace RNI_CS_SQL_REST_API.Repositories
                 "FROM core.ubicaciones u " +
                 "ORDER BY u.pais, u.ciudad";
 
-            var resultadoMunicipios = await conexion
+            var resultadoUbicaciones = await conexion
                 .QueryAsync<Ubicacion>(sentenciaSQL, new DynamicParameters());
 
-            return resultadoMunicipios.ToList();
+            return resultadoUbicaciones.ToList();
         }
     }
 }

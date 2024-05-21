@@ -13,10 +13,13 @@ builder.Services.AddSingleton<PgsqlDbContext>();
 //Los repositorios
 builder.Services.AddScoped<IResumenRepository, ResumenRepository>();
 builder.Services.AddScoped<IUbicacionRepository, UbicacionRepository>();
+builder.Services.AddScoped<ITipoReactorRepository, TipoReactorRepository>();
 
 //Aqui agregamos los servicios asociados para cada ruta
 builder.Services.AddScoped<ResumenService>();
 builder.Services.AddScoped<UbicacionService>();
+builder.Services.AddScoped<TipoReactorService>();
+
 
 // Add services to the container.
 
