@@ -38,8 +38,8 @@ namespace RNI_CS_SQL_REST_API.Repositories
                 "FROM core.ubicaciones u " +
                 "WHERE u.id = @ubicacion_id";
 
-            var resultado = await conexion.QueryAsync<Ubicacion>(sentenciaSQL,
-                parametrosSentencia);
+            var resultado = await conexion
+                .QueryAsync<Ubicacion>(sentenciaSQL, parametrosSentencia);
 
             if (resultado.Any())
                 unaUbicacion = resultado.First();

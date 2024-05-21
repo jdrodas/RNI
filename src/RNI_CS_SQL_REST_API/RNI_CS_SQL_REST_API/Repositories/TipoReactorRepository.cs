@@ -38,8 +38,8 @@ namespace RNI_CS_SQL_REST_API.Repositories
                 "FROM core.tipos_reactores tr " +
                 "WHERE tr.id = @tipo_reactor_id";
 
-            var resultado = await conexion.QueryAsync<TipoReactor>(sentenciaSQL,
-                parametrosSentencia);
+            var resultado = await conexion
+                .QueryAsync<TipoReactor>(sentenciaSQL, parametrosSentencia);
 
             if (resultado.Any())
                 unTipoReactor = resultado.First();

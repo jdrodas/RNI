@@ -28,7 +28,8 @@ namespace RNI_CS_SQL_REST_API.Services
             {
                 Id = unTipoReactor.Id,
                 Nombre = unTipoReactor.Nombre,
-                Reactores = await _reactorRepository.GetByReactorTypeIdAsync(tipo_reactor_id)
+                Reactores = await _reactorRepository
+                                    .GetByReactorTypeIdAsync(tipo_reactor_id)
             };
 
             return unTipoReactorDetallado;
