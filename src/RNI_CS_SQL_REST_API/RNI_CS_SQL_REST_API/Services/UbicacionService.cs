@@ -24,5 +24,22 @@ namespace RNI_CS_SQL_REST_API.Services
 
             return unaUbicacion;
         }
+
+        public async Task<List<Reactor>> GetAssociatedReactorsAsync(int ubicacion_id)
+        {
+            Ubicacion unaUbicacion = await _ubicacionRepository
+                .GetByIdAsync(ubicacion_id);
+
+            if (unaUbicacion.Id == 0)
+                throw new AppValidationException($"Ubicación no encontrada con el id {ubicacion_id}");
+
+            var reactoresAsociados = await _ubicacionRepository
+                .GetAssociatedReactorsAsync(ubicacion_id);
+
+            if (reactoresAsociados.Count == 0)
+                throw new AppValidationException($"Ubicacion {unaUbicacion.Pais} - {unaUbicacion.Ciudad} no tiene reactores localizados allí");
+
+            return reactoresAsociados;
+        }
     }
 }

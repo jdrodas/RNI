@@ -34,5 +34,21 @@ namespace RNI_CS_SQL_REST_API.Controllers
                 return NotFound(error.Message);
             }
         }
+
+        [HttpGet("{ubicacion_id:int}/Reactores")]
+        public async Task<IActionResult> GetAssociatedReactorsAsync(int ubicacion_id)
+        {
+            try
+            {
+                var losReactoresAsociados = await _ubicacionService
+                    .GetAssociatedReactorsAsync(ubicacion_id);
+
+                return Ok(losReactoresAsociados);
+            }
+            catch (AppValidationException error)
+            {
+                return NotFound(error.Message);
+            }
+        }
     }
 }

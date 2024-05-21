@@ -47,5 +47,24 @@ namespace RNI_CS_SQL_REST_API.Repositories
             return unaUbicacion;
         }
 
+        public async Task<List<Reactor>> GetAssociatedReactorsAsync(int ubicacion_id)
+        {
+            var conexion = contextoDB.CreateConnection();
+
+            DynamicParameters parametrosSentencia = new();
+            parametrosSentencia.Add("@ubicacion_id", ubicacion_id,
+                                    DbType.Int32, ParameterDirection.Input);
+
+            string sentenciaSQL = "SELECT v.reactor_id id, v.reactor_nombre nombre, v.ubicacion_pais ubicacionPais, " +
+                "v.ubicacion_ciudad ubicacionCiudad, v.reactor_tipo tipoReactor, v.reactor_estado estadoReactor, " +
+                "v.potencia_termica potenciaTermica, v.fecha_primera_reaccion fechaPrimeraReaccion " +
+                "FROM v_info_reactores v " +
+                "WHERE v.ubicacion_id = @ubicacion_id";
+
+            var resultadoReactores = await conexion
+                .QueryAsync<Reactor>(sentenciaSQL, parametrosSentencia);
+
+            return resultadoReactores.ToList();
+        }
     }
 }

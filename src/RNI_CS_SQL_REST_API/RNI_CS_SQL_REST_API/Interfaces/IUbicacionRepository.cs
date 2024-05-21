@@ -7,5 +7,7 @@ namespace RNI_CS_SQL_REST_API.Interfaces
         public Task<List<Ubicacion>> GetAllAsync();
 
         public Task<Ubicacion> GetByIdAsync(int departamento_id);
+
+        public Task<List<Reactor>> GetAssociatedReactorsAsync(int ubicacion_id);
     }
 }
