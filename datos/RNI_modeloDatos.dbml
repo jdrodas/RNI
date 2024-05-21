@@ -1,0 +1,50 @@
+// Scripts de clase - Mayo 21 de 2024 
+// Curso de Tópicos Avanzados de base de datos - UPB 202410
+// Juan Dario Rodas - juand.rodasm@upb.edu.co
+
+// Proyecto: RNI - Reactores Nucleares de Investigación
+// Motor de Base de datos: PostgreSQL 16.x
+
+//Proyecto: Atlas de Frutas Colombianas
+// Especificación en DBML del modelo de datos
+
+
+Table "core"."ubicaciones" {
+  "id" integer [pk, increment, note: 'id de la ubicación']
+  "ciudad" varchar(100) [not null, note: 'Nombre de la ciudad']
+  "pais" varchar(100) [not null, note: 'Nombre del pais']
+
+  Indexes {
+    (ciudad, pais) [unique, name: "ubicaciones_ciudad_pais_uk"]
+  }
+  Note: 'Ubicaciones de los reactores'
+}
+
+Table "core"."tipos_reactores" {
+  "id" integer [pk, increment, note: 'id del tipo de reactor']
+  "nombre" varchar(50) [unique, not null, note: 'Nombre del tipo de reactor']
+  Note: 'Tipos de reactores'
+}
+
+Table "core"."estados_reactores" {
+  "id" integer [pk, increment, note: 'id del estado de reactor']
+  "nombre" varchar(50) [unique, not null, note: 'Nombre del estado de reactor']
+  Note: 'Estados de los reactores'
+}
+
+Table "core"."reactores" {
+  "id" integer [pk, increment, note: 'id del reactor']
+  "nombre" varchar(100) [not null, note: 'Nombre del reactor']
+  "potencia_termica" float [not null, note: 'Potencia térmica en KW del reactor']
+  "ubicacion_id" integer [not null, note: 'Id de la ubicación del reactor']
+  "estado_id" integer [not null, note: 'Id del estado del reactor']
+  "tipo_id" integer [not null, note: 'Id del tipo del reactor']
+  "fecha_primera_reaccion" date [note: 'Fecha de la primera reacción del reactor']
+  Note: 'Reactores Nucleares de Investigación'
+}
+
+Ref:"core"."ubicaciones"."id" < "core"."reactores"."ubicacion_id"
+
+Ref:"core"."estados_reactores"."id" < "core"."reactores"."estado_id"
+
+Ref:"core"."tipos_reactores"."id" < "core"."reactores"."tipo_id"
