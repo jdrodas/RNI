@@ -5,17 +5,17 @@ namespace RNI_CS_SQL_REST_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ResumenController(ResumenService resumenService) : Controller
+    public class ReactoresController(ReactorService reactorService) : Controller
     {
-        private readonly ResumenService _resumenService = resumenService;
+        private readonly ReactorService _reactorService = reactorService;
 
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            var elResumen = await _resumenService
+            var losReactores = await _reactorService
                 .GetAllAsync();
 
-            return Ok(elResumen);
+            return Ok(losReactores);
         }
     }
 }
