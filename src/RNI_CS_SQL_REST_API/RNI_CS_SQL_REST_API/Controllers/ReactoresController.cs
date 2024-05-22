@@ -75,5 +75,21 @@ namespace RNI_CS_SQL_REST_API.Controllers
                 return BadRequest($"Error de operacion en DB: {error.Message}");
             }
         }
+
+        [HttpDelete("{reactor_id:int}")]
+        public async Task<IActionResult> RemoveAsync(int reactor_id)
+        {
+            try
+            {
+                var reactorBorrado = await _reactorService
+                    .RemoveAsync(reactor_id);
+
+                return Ok($"El reactor {reactorBorrado.Nombre} ubicado en {reactorBorrado.UbicacionPais} - {reactorBorrado.UbicacionCiudad} fue eliminado correctamente!");
+            }
+            catch (AppValidationException error)
+            {
+                return NotFound(error.Message);
+            }
+        }
     }
 }

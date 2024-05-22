@@ -184,6 +184,36 @@ namespace RNI_CS_SQL_REST_API.Repositories
             return resultadoAccion;
         }
 
+        public async Task<bool> RemoveAsync(int reactor_id)
+        {
+            bool resultadoAccion = false;
+
+            try
+            {
+                var conexion = contextoDB.CreateConnection();
+
+                string procedimiento = "core.p_elimina_reactor";
+                var parametros = new
+                {
+                    p_id = reactor_id
+                };
+
+                var cantidad_filas = await conexion.ExecuteAsync(
+                    procedimiento,
+                    parametros,
+                    commandType: CommandType.StoredProcedure);
+
+                if (cantidad_filas != 0)
+                    resultadoAccion = true;
+            }
+            catch (NpgsqlException error)
+            {
+                throw new DbOperationException(error.Message);
+            }
+
+            return resultadoAccion;
+        }
+
         public async Task<int> GetReactorStateIdByNameAsync(string unEstadoReactor)
         {
             int estado_reactor_id = 0;

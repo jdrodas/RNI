@@ -140,6 +140,30 @@ namespace RNI_CS_SQL_REST_API.Services
             return (reactorExistente);
         }
 
+        public async Task<Reactor> RemoveAsync(int reactor_id)
+        {
+            Reactor reactorEliminado = await _reactorRepository
+                .GetByIdAsync(reactor_id);
+
+            if (reactorEliminado.Id == 0)
+                throw new AppValidationException($"Reactor no encontrado con el id {reactor_id}");
+
+            try
+            {
+                bool resultadoAccion = await _reactorRepository
+                    .RemoveAsync(reactor_id);
+
+                if (!resultadoAccion)
+                    throw new AppValidationException("Operación ejecutada pero no generó cambios en la DB");
+            }
+            catch (DbOperationException)
+            {
+                throw;
+            }
+
+            return reactorEliminado;
+        }
+
         private static string ValidaDatos(Reactor unReactor)
         {
             if (string.IsNullOrEmpty(unReactor.UbicacionPais))
