@@ -29,22 +29,17 @@ namespace RNI_CS_SQL_REST_API.Services
 
         public async Task<Reactor> CreateAsync(Reactor unReactor)
         {
+            string resultadoValidacionDatos = ValidaDatos(unReactor);
 
-            if (string.IsNullOrEmpty(unReactor.UbicacionPais))
-                throw new AppValidationException("El país donde está ubicado el reactor no puede estar vacío");
-
-            if (string.IsNullOrEmpty(unReactor.UbicacionCiudad))
-                throw new AppValidationException("La ciudad donde está ubicado el reactor no puede estar vacío");
+            if(!string.IsNullOrEmpty(resultadoValidacionDatos))
+                throw new AppValidationException(resultadoValidacionDatos);
 
             var ubicacionExistente = await _ubicacionRepository
-                .GetByCountryAndCityAsync(unReactor.UbicacionPais, unReactor.UbicacionCiudad);
+                .GetByCountryAndCityAsync(unReactor.UbicacionPais!, unReactor.UbicacionCiudad!);
 
             if (ubicacionExistente.Id == 0)
                 throw new AppValidationException($"No hay una ubicación {unReactor.UbicacionPais} - {unReactor.UbicacionCiudad} " +
                     $"previamente registrada para el reactor");
-
-            if (string.IsNullOrEmpty(unReactor.Nombre))
-                throw new AppValidationException("El nombre del reactor no puede estar vacío");
 
             var reactorExistente = await _reactorRepository
                 .GetByNameAndLocation(unReactor);
@@ -53,29 +48,17 @@ namespace RNI_CS_SQL_REST_API.Services
                 throw new AppValidationException($"Ya existe un reactor con el nombre {unReactor.Nombre} en la ubicación" +
                     $" {unReactor.UbicacionPais} - {unReactor.UbicacionCiudad} previamente registrado");
 
-            if (string.IsNullOrEmpty(unReactor.EstadoReactor))
-                throw new AppValidationException("El estado del reactor no puede estar vacío");
-
             var estadoReactor_id = await _reactorRepository
                 .GetReactorStateIdByNameAsync(unReactor.EstadoReactor!);
 
             if (estadoReactor_id == 0)
                 throw new AppValidationException($"El estado del reactor {unReactor.EstadoReactor} no está previamente registrado");
 
-            if (string.IsNullOrEmpty(unReactor.TipoReactor))
-                throw new AppValidationException("El tipo del reactor no puede estar vacío");
-
             var tipoReactor_id = await _reactorRepository
                 .GetReactorTypeIdByNameAsync(unReactor.TipoReactor!);
 
             if (tipoReactor_id == 0)
                 throw new AppValidationException($"El tipo de reactor {unReactor.TipoReactor} no está previamente registrado");
-
-            if (unReactor.PotenciaTermica < 0)
-                throw new AppValidationException("La potencia del reactor debe ser un valor positivo mayor o igual a cero");
-
-            if (unReactor.FechaPrimeraReaccion.HasValue && unReactor.FechaPrimeraReaccion.Value > DateTime.Now)
-                throw new AppValidationException("La fecha de la primera reacción no puede ser en el futuro");
 
             try
             {
@@ -94,6 +77,96 @@ namespace RNI_CS_SQL_REST_API.Services
             }
 
             return reactorExistente;
+        }
+
+        public async Task<Reactor> UpdateAsync(Reactor unReactor)
+        {
+            string resultadoValidacionDatos = ValidaDatos(unReactor);
+
+            var reactorExistente = await _reactorRepository
+                .GetByIdAsync(unReactor.Id);
+
+            if (reactorExistente.Id == 0)
+                throw new AppValidationException($"No existe un reactor previamente registrado con el ID {unReactor.Id}");
+
+            if (!string.IsNullOrEmpty(resultadoValidacionDatos))
+                throw new AppValidationException(resultadoValidacionDatos);
+
+            var ubicacionExistente = await _ubicacionRepository
+                .GetByCountryAndCityAsync(unReactor.UbicacionPais!, unReactor.UbicacionCiudad!);
+
+            if (ubicacionExistente.Id == 0)
+                throw new AppValidationException($"No hay una ubicación {unReactor.UbicacionPais} - {unReactor.UbicacionCiudad} " +
+                    $"previamente registrada para el reactor");
+
+            reactorExistente = await _reactorRepository
+                .GetByNameAndLocation(unReactor);
+
+            if (reactorExistente.Id != unReactor.Id)
+                throw new AppValidationException($"Ya existe un reactor con el nombre {unReactor.Nombre} en la ubicación" +
+                    $" {unReactor.UbicacionPais} - {unReactor.UbicacionCiudad} diferente al que está siendo actualizado");
+
+            if (string.IsNullOrEmpty(unReactor.EstadoReactor))
+                throw new AppValidationException("El estado del reactor no puede estar vacío");
+
+            var estadoReactor_id = await _reactorRepository
+                .GetReactorStateIdByNameAsync(unReactor.EstadoReactor!);
+
+            if (estadoReactor_id == 0)
+                throw new AppValidationException($"El estado del reactor {unReactor.EstadoReactor} no está previamente registrado");
+
+            var tipoReactor_id = await _reactorRepository
+                .GetReactorTypeIdByNameAsync(unReactor.TipoReactor!);
+
+            if (tipoReactor_id == 0)
+                throw new AppValidationException($"El tipo de reactor {unReactor.TipoReactor} no está previamente registrado");
+
+            try
+            {
+                bool resultadoAccion = await _reactorRepository
+                    .UpdateAsync(unReactor, ubicacionExistente.Id);
+
+                if (!resultadoAccion)
+                    throw new AppValidationException("Operación ejecutada pero no generó cambios en la DB");
+
+                reactorExistente = await _reactorRepository
+                    .GetByIdAsync(unReactor.Id);
+            }
+            catch (DbOperationException)
+            {
+                throw;
+            }
+
+            return (reactorExistente);
+        }
+
+        private static string ValidaDatos(Reactor unReactor)
+        {
+            if (string.IsNullOrEmpty(unReactor.UbicacionPais))
+                return ("El país donde está ubicado el reactor no puede estar vacío");
+
+            if (string.IsNullOrEmpty(unReactor.UbicacionCiudad))
+                return ("La ciudad donde está ubicado el reactor no puede estar vacío");
+
+            if (string.IsNullOrEmpty(unReactor.Nombre))
+                return ("El nombre del reactor no puede estar vacío");
+
+            if (string.IsNullOrEmpty(unReactor.Nombre))
+                return ("El nombre del reactor no puede estar vacío");
+
+            if (string.IsNullOrEmpty(unReactor.EstadoReactor))
+                return ("El estado del reactor no puede estar vacío");
+
+            if (string.IsNullOrEmpty(unReactor.TipoReactor))
+                return ("El tipo del reactor no puede estar vacío");
+
+            if (unReactor.PotenciaTermica < 0)
+                return ("La potencia del reactor debe ser un valor positivo mayor o igual a cero");
+
+            if (unReactor.FechaPrimeraReaccion.HasValue && unReactor.FechaPrimeraReaccion.Value > DateTime.Now)
+                return ("La fecha de la primera reacción no puede ser en el futuro");
+
+            return string.Empty;
         }
     }
 }

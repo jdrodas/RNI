@@ -144,6 +144,46 @@ namespace RNI_CS_SQL_REST_API.Repositories
             return resultadoAccion;
         }
 
+        public async Task<bool> UpdateAsync(Reactor unReactor, int ubicacion_id)
+        {
+            bool resultadoAccion = false;
+
+            var estado_reactor_id = await GetReactorStateIdByNameAsync(unReactor.EstadoReactor!);
+            var tipo_reactor_id = await GetReactorTypeIdByNameAsync(unReactor.TipoReactor!);
+
+            try
+            {
+                var conexion = contextoDB.CreateConnection();
+
+                string procedimiento = "core.p_actualiza_reactor";
+
+                var parametros = new
+                {
+                    p_id = unReactor.Id,
+                    p_nombre = unReactor.Nombre,
+                    p_ubicacion_id = ubicacion_id,
+                    p_estado_id = estado_reactor_id,
+                    p_tipo_id = tipo_reactor_id,
+                    p_potencia_termica = unReactor.PotenciaTermica,
+                    p_fecha_primera_reaccion = unReactor.FechaPrimeraReaccion
+                };
+
+                var cantidad_filas = await conexion.ExecuteAsync(
+                    procedimiento,
+                    parametros,
+                    commandType: CommandType.StoredProcedure);
+
+                if (cantidad_filas != 0)
+                    resultadoAccion = true;
+            }
+            catch (NpgsqlException error)
+            {
+                throw new DbOperationException(error.Message);
+            }
+
+            return resultadoAccion;
+        }
+
         public async Task<int> GetReactorStateIdByNameAsync(string unEstadoReactor)
         {
             int estado_reactor_id = 0;

@@ -55,5 +55,25 @@ namespace RNI_CS_SQL_REST_API.Controllers
                 return BadRequest($"Error en la operación de la DB {error.Message}");
             }
         }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateAsync(Reactor unReactor)
+        {
+            try
+            {
+                var reactorActualizado = await _reactorService
+                    .UpdateAsync(unReactor);
+
+                return Ok(reactorActualizado);
+            }
+            catch (AppValidationException error)
+            {
+                return BadRequest($"Error de validación: {error.Message}");
+            }
+            catch (DbOperationException error)
+            {
+                return BadRequest($"Error de operacion en DB: {error.Message}");
+            }
+        }
     }
 }

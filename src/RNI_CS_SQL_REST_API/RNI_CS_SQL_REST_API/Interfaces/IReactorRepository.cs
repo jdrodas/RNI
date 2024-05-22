@@ -14,6 +14,8 @@ namespace RNI_CS_SQL_REST_API.Interfaces
 
         public Task<bool> CreateAsync(Reactor unReactor, int ubicacion_id);
 
+        public Task<bool> UpdateAsync(Reactor unaReactor, int ubicacion_id);
+
         public Task<int> GetReactorStateIdByNameAsync(string unEstadoReactor);
 
         public Task<int> GetReactorTypeIdByNameAsync(string unTipoReactor);
