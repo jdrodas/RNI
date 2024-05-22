@@ -26,6 +26,6 @@ namespace RNI_CS_SQL_REST_API.Models
         public float PotenciaTermica { get; set; } = 0f;
 
         [JsonPropertyName("fecha_primera_reaccion")]
-        public DateTime FechaPrimeraReaccion { get; set; } = new DateTime();
+        public DateTime? FechaPrimeraReaccion { get; set; }
     }
 }

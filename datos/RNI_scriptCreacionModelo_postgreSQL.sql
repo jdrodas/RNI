@@ -238,7 +238,7 @@ create or replace procedure core.p_inserta_reactor(
                             in p_estado_id              integer,
                             in p_tipo_id                integer,
                             in p_potencia_termica       float,
-                            in p_fecha_primera_reaccion date)
+                            in p_fecha_primera_reaccion timestamp without time zone)
     language plpgsql as
 $$
     begin 
@@ -255,7 +255,7 @@ create or replace procedure core.p_actualiza_reactor(
                             in p_estado_id              integer,
                             in p_tipo_id                integer,
                             in p_potencia_termica       float,
-                            in p_fecha_primera_reaccion date)
+                            in p_fecha_primera_reaccion timestamp without time zone)
     language plpgsql as
 $$
     begin

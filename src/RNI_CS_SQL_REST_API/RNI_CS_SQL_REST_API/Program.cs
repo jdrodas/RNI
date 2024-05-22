@@ -1,3 +1,4 @@
+using Microsoft.OpenApi.Models;
 using RNI_CS_SQL_REST_API.DBContexts;
 using RNI_CS_SQL_REST_API.Interfaces;
 using RNI_CS_SQL_REST_API.Repositories;
@@ -24,11 +25,22 @@ builder.Services.AddScoped<ReactorService>();
 
 
 // Add services to the container.
+builder.Services.AddControllers()
+    .AddJsonOptions(
+        options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
 
-builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "RNI - Reactores Nucleares de Investigación - PostgreSQL Version",
+        Description = "API para la gestión de Reactores Nucleares de Investigación"
+    });
+});
 
 var app = builder.Build();
 
@@ -38,6 +50,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+//Modificamos el encabezado de las peticiones para ocultar el web server utilizado
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Append("Server", "RNIServer");
+    await next();
+});
 
 app.UseHttpsRedirection();
 

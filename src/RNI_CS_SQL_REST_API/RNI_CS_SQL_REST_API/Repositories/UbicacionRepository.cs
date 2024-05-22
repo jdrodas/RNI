@@ -47,6 +47,34 @@ namespace RNI_CS_SQL_REST_API.Repositories
             return unaUbicacion;
         }
 
+        public async Task<Ubicacion> GetByCountryAndCityAsync(string ubicacion_pais, string ubicacion_ciudad)
+        {
+            Ubicacion unaUbicacion = new();
+
+            var conexion = contextoDB.CreateConnection();
+
+            DynamicParameters parametrosSentencia = new();
+            parametrosSentencia.Add("@ubicacion_pais", ubicacion_pais,
+                                    DbType.String, ParameterDirection.Input);
+
+            parametrosSentencia.Add("@ubicacion_ciudad", ubicacion_ciudad,
+                                    DbType.String, ParameterDirection.Input);
+
+
+            string sentenciaSQL = "SELECT u.id, u.pais, u.ciudad " +
+                "FROM core.ubicaciones u " +
+                "WHERE LOWER(u.pais) = LOWER(@ubicacion_pais) " +
+                "AND LOWER(u.ciudad) = LOWER(@ubicacion_ciudad)";
+
+            var resultado = await conexion
+                .QueryAsync<Ubicacion>(sentenciaSQL, parametrosSentencia);
+
+            if (resultado.Any())
+                unaUbicacion = resultado.First();
+
+            return unaUbicacion;
+        }
+
         public async Task<List<Reactor>> GetAssociatedReactorsAsync(int ubicacion_id)
         {
             var conexion = contextoDB.CreateConnection();
